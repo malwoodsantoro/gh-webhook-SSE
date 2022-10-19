@@ -2,7 +2,7 @@ const express = require("express");
 const ngrok = require("ngrok");
 const app = express();
 
-app.get("/", (req, res) => {
+app.get("/", (res) => {
   res.send("Hello!");
 });
 
