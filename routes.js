@@ -7,7 +7,7 @@ router.get("/", function(req, res) {
 });
 
 router.post("/webhooks", function(req, res) {
-  console.log('woooooooow');
+  console.log('wooooooow');
   res.send("Successfully received");
 });
 
