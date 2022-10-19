@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
 
 app.post("/webhooks", async (req, res) => {
   res.sendStatus(200)
-  console.log('worked')
+  console.log('worked!')
 });
 
 app.listen(3000, () => console.log(`App is running on port 3000`));
