@@ -6,6 +6,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhooks", async (req, res) => {
+  console.log('um we out here?')
   res.status(200).send("Pull request!");
 });
 
