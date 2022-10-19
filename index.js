@@ -5,14 +5,8 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.post("/webhooks", function (req, res) {
+app.post("/webhooks", async (req, res) => {
   res.status(200).send("Pull request!");
 });
 
-app.listen(3000, function () {
-  console.log("Listening for webhooks on port 3000");
-
-  // (async function () {
-  //   const url = await ngrok.connect(3000);
-  // })();
-});
+app.listen(3000, () => console.log(`App is running on port 3000`));
