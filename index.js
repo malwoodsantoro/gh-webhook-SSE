@@ -1,5 +1,4 @@
 const express = require("express");
-const ngrok = ("ngrok");
 const app = express();
 
 app.get("/", (req, res) => {
