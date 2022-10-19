@@ -7,7 +7,6 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhooks", function (req, res) {
-  // respond with 200 OK
   res.send("Pull request!");
 });
 
