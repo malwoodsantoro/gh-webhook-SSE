@@ -6,7 +6,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhooks", function (req, res) {
-  res.send("Pull request!");
+  res.status(200).send("Pull request!");
 });
 
 app.listen(3000, function () {
