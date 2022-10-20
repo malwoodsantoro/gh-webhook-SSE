@@ -44,6 +44,7 @@ app.get("/", function (req, res) {
 });
 
 app.post("/webhooks", function (req, res) {
+  console.log('ok')
   console.log(req.body);
 });
 
