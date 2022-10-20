@@ -13,7 +13,7 @@ sequelize
     console.error("Unable to connect to the database:", err);
   });
 
-const Push = sequelize.define("push", {
+const Star = sequelize.define("star", {
   pr: Sequelize.TEXT,
   info: Sequelize.STRING,
 });
@@ -21,13 +21,13 @@ const Push = sequelize.define("push", {
 sequelize.sync({ force: true }).then(() => {
   console.log(`Database & tables created!`);
 
-  Push.bulkCreate([
+  Star.bulkCreate([
     { pr: "pick up some bread after work", info: "shopping" },
     { pr: "remember to write up meeting notes", info: "work" },
     { pr: "learn how to use node orm", info: "work" },
   ])
     .then(function () {
-      return Push.findAll();
+      return Star.findAll();
     })
     .then(function (responses) {
       console.log(responses);
@@ -36,16 +36,20 @@ sequelize.sync({ force: true }).then(() => {
 
 app.use(bodyParser.json());
 
-const port = "3000";
+const port = "5000";
 app.set("port", port);
 
-app.get("/", function (req, res) {
-  Push.findAll().then((notes) => res.json(notes));
+app.get("/stars", function (req, res) {
+  Star.findAll().then((stars) => res.json(stars));
 });
 
 app.post("/webhooks", function (req, res) {
   console.log("ok");
-  Push.create({ pr: req.html_url, info: req.forks_url });
+  Star.create({
+    pr: req.body.repository.html_url,
+    info: req.body.repository.forks_url,
+  });
+  res.status(200).send("OK");
 });
 
 app.listen(port, () => console.log(`Server running on localhost:${port}`));

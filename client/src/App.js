@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useEffect, useState } from "react";
+import { getStars } from "./api";
 
 function App() {
+  const [stars, setStars] = useState([]);
+
+  const loadStars = async () => {
+    const result = await getStars();
+    setStars(result);
+  };
+
+  useEffect(() => {
+    loadStars();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {stars.map((stars) => {
+        return <div>ok</div>;
+      })}
+      <button onClick={() => window.location.reload(false)}>Click to reload!</button>
     </div>
   );
 }
