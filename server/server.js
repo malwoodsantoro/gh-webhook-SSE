@@ -44,8 +44,8 @@ app.get("/", function (req, res) {
 });
 
 app.post("/webhooks", function (req, res) {
-  console.log('ok')
-  Push.create({pr: req.html_url, info: req.forks_url});
+  console.log("ok");
+  Push.create({ pr: req.html_url, info: req.forks_url });
 });
 
 app.listen(port, () => console.log(`Server running on localhost:${port}`));
