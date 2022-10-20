@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get("/", function(req, res) {
+router.get("/", function( res) {
   res.send("Welcome to the Webhooks API");
 });
 
