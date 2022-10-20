@@ -39,12 +39,12 @@ app.use(bodyParser.json());
 const port = "3000";
 app.set("port", port);
 
-app.get("/", function(req, res) {
-  Push.findAll().then(notes => res.json(notes));
+app.get("/", function (req, res) {
+  Push.findAll().then((notes) => res.json(notes));
 });
 
-app.post("/webhooks", function(req, res) {
-  console.log(req.body)
+app.post("/webhooks", function (req, res) {
+  console.log(req.body);
 });
 
 app.listen(port, () => console.log(`Server running on localhost:${port}`));
