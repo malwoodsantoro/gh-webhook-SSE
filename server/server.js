@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const Sequelize = require("sequelize");
-
 const sequelize = new Sequelize("sqlite://db.sqlite", { sync: true });
 
 sequelize
