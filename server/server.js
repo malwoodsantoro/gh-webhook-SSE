@@ -45,7 +45,7 @@ app.get("/", function (req, res) {
 
 app.post("/webhooks", function (req, res) {
   console.log('ok')
-  console.log(req.body);
+  console.log(req.pushed_at);
 });
 
 app.listen(port, () => console.log(`Server running on localhost:${port}`));
