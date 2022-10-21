@@ -1,14 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const EventEmitter = require("events");
-
-const SSE = new EventEmitter(); // my event emitter instance
+const Sequelize = require("sequelize");
 
 const server = express();
 const cors = require("cors");
+const SSE = new EventEmitter(); 
+
 server.use(cors({ origin: true }));
 server.options("*", cors());
-const Sequelize = require("sequelize");
+
 const sequelize = new Sequelize("sqlite://db.sqlite", { sync: true });
 
 server.use(function (req, res, next) {
@@ -29,17 +30,17 @@ sequelize
   });
 
 const Star = sequelize.define("star", {
-  pr: Sequelize.TEXT,
-  info: Sequelize.STRING,
+  owner: Sequelize.STRING,
+  sender: Sequelize.STRING,
 });
 
 sequelize.sync({ force: true }).then(() => {
   console.log(`Database & tables created!`);
 
   Star.bulkCreate([
-    { pr: "pick up some bread after work", info: "shopping" },
-    { pr: "remember to write up meeting notes", info: "work" },
-    { pr: "learn how to use node orm", info: "work" },
+    { owner: "malwoodsantoro", sender: "test1" },
+    { owner: "malwoodsantoro", sender: "test2" },
+    { owner: "malwoodsantoro", sender: "test3" },
   ])
     .then(function () {
       return Star.findAll();
@@ -59,54 +60,26 @@ server.get("/api/stars", function (req, res) {
 });
 
 server.post("/webhooks", function (req, res) {
+  SSE.emit("push", "message", { msg: req.body.sender.login });
   Star.create({
-    pr: req.body.repository.html_url,
-    info: req.body.repository.forks_url,
+    owner: req.body.repository.owner.login,
+    sender: req.body.sender.login,
   });
   res.status(200).send("OK");
 });
-
-const SEND_INTERVAL = 1000;
-
-const writeEvent = (res) => {
-  res.write("it's something", () => {
-    console.log("ok");
-  });
-};
-
-// const sendEvent = (req, res) => {
-// res.writeHead(200, {
-//   "Cache-Control": "no-cache",
-//   "Connection": "keep-alive",
-//   "Content-Type": "text/event-stream",
-//   "Access-Control-Allow-Origin": "*",
-//   "Access-Control-Allow-Credentials": "true",
-// });
-
-//   setInterval(() => {
-//     writeEvent(res);
-//   }, SEND_INTERVAL);
-
-//   writeEvent(res);
-// };
 
 server.get("/stream", (req, res) => {
   res.writeHead(200, {
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
-    "Content-Type": "text/event-stream"
-    // "Access-Control-Allow-Origin": "*",
-    // "Access-Control-Allow-Credentials": "true",
+    "Content-Type": "text/event-stream",
   });
-  let data = { name: "Mithoon Kumar" }
+
+  // let data = { name: "event!!" };
 
   SSE.on("push", function (event, data) {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   });
 });
-
-setInterval(function () {
-  SSE.emit("push", "message", { msg: "admit one" });
-}, 1000);
 
 server.listen(port, () => console.log(`Server running on localhost:${port}`));

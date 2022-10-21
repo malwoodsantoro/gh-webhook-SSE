@@ -1,8 +1,9 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import { getStars } from "./api";
+import { AiFillStar  } from "react-icons/ai";
 
-function App() {
+const App = () => {
   const [stars, setStars] = useState([]);
 
   const loadStars = async () => {
@@ -20,10 +21,7 @@ function App() {
     });
 
     source.addEventListener("message", (e) => {
-      console.log('got message!!')
-      // const data = JSON.parse(e.data);
-
-      // console.log(data);
+      window.location.reload();
     });
 
     source.addEventListener("error", (e) => {
@@ -37,15 +35,12 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Testing</h1>
-      {stars.map((stars) => {
-        return <div>ok</div>;
+      <h1>Repo stars</h1>
+      {stars.map((star) => {
+        return <AiFillStar color="#add8e6" />;
       })}
-      <button onClick={() => window.location.reload(false)}>
-        Click to reload!
-      </button>
     </div>
   );
-}
+};
 
 export default App;
