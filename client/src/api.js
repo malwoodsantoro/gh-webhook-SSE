@@ -1,9 +1,9 @@
 export async function getStars() {
   try {
-    const res = await fetch("/stars");
+    const res = await fetch("/api/stars");
     return await res.json();
   } catch (err) {
-    console.error("Fetching shipments from API failed!");
+    console.error("Fetching failed");
     throw err;
   }
 }

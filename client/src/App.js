@@ -12,14 +12,38 @@ function App() {
 
   useEffect(() => {
     loadStars();
+
+    const source = new EventSource(`http://localhost:5000/stream`);
+
+    source.addEventListener("open", () => {
+      console.log("SSE opened!");
+    });
+
+    source.addEventListener("message", (e) => {
+      console.log('message')
+      const data = JSON.parse(e.data);
+
+      console.log(data);
+    });
+
+    source.addEventListener("error", (e) => {
+      console.error("Error: ", e);
+    });
+
+    return () => {
+      source.close();
+    };
   }, []);
 
   return (
     <div className="App">
+      <h1>Testing</h1>
       {stars.map((stars) => {
         return <div>ok</div>;
       })}
-      <button onClick={() => window.location.reload(false)}>Click to reload!</button>
+      <button onClick={() => window.location.reload(false)}>
+        Click to reload!
+      </button>
     </div>
   );
 }

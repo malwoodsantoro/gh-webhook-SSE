@@ -1,8 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const app = express();
+const server = express();
+const cors = require("cors");
+server.use(cors({credentials: true, origin: true}));
+server.options('*', cors())
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize("sqlite://db.sqlite", { sync: true });
+
+server.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+  });
 
 sequelize
   .authenticate()
@@ -34,17 +45,16 @@ sequelize.sync({ force: true }).then(() => {
     });
 });
 
-app.use(bodyParser.json());
+server.use(bodyParser.json());
 
 const port = "5000";
-app.set("port", port);
+server.set("port", port);
 
-app.get("/stars", function (req, res) {
+server.get("/api/stars", function (req, res) {
   Star.findAll().then((stars) => res.json(stars));
 });
 
-app.post("/webhooks", function (req, res) {
-  console.log("ok");
+server.post("/webhooks", function (req, res) {
   Star.create({
     pr: req.body.repository.html_url,
     info: req.body.repository.forks_url,
@@ -52,4 +62,36 @@ app.post("/webhooks", function (req, res) {
   res.status(200).send("OK");
 });
 
-app.listen(port, () => console.log(`Server running on localhost:${port}`));
+const SEND_INTERVAL = 1000;
+
+const writeEvent = (res) => {
+  res.write("it's something", () => {
+    console.log('ok')
+  })
+};
+
+const sendEvent = (req, res) => {
+  res.writeHead(200, {
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": "true",
+  });
+
+  setInterval(() => {
+    writeEvent(res);
+  }, SEND_INTERVAL);
+
+  writeEvent(res);
+};
+
+server.get("/stream", (req, res) => {
+  if (req.headers.accept === "text/event-stream") {
+    sendEvent(req, res);
+  } else {
+    res.json({ message: "Ok" });
+  }
+});
+
+server.listen(port, () => console.log(`Server running on localhost:${port}`));
