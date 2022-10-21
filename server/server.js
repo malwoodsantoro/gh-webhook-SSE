@@ -1,19 +1,23 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const EventEmitter = require("events");
+
+const SSE = new EventEmitter(); // my event emitter instance
+
 const server = express();
 const cors = require("cors");
-server.use(cors({credentials: true, origin: true}));
-server.options('*', cors())
+server.use(cors({ origin: true }));
+server.options("*", cors());
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize("sqlite://db.sqlite", { sync: true });
 
 server.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
   next();
-  });
+});
 
 sequelize
   .authenticate()
@@ -66,32 +70,43 @@ const SEND_INTERVAL = 1000;
 
 const writeEvent = (res) => {
   res.write("it's something", () => {
-    console.log('ok')
-  })
-};
-
-const sendEvent = (req, res) => {
-  res.writeHead(200, {
-    "Cache-Control": "no-cache",
-    "Connection": "keep-alive",
-    "Content-Type": "text/event-stream",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Credentials": "true",
+    console.log("ok");
   });
-
-  setInterval(() => {
-    writeEvent(res);
-  }, SEND_INTERVAL);
-
-  writeEvent(res);
 };
+
+// const sendEvent = (req, res) => {
+// res.writeHead(200, {
+//   "Cache-Control": "no-cache",
+//   "Connection": "keep-alive",
+//   "Content-Type": "text/event-stream",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Credentials": "true",
+// });
+
+//   setInterval(() => {
+//     writeEvent(res);
+//   }, SEND_INTERVAL);
+
+//   writeEvent(res);
+// };
 
 server.get("/stream", (req, res) => {
-  if (req.headers.accept === "text/event-stream") {
-    sendEvent(req, res);
-  } else {
-    res.json({ message: "Ok" });
-  }
+  res.writeHead(200, {
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream"
+    // "Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Credentials": "true",
+  });
+  let data = { name: "Mithoon Kumar" }
+
+  SSE.on("push", function (event, data) {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  });
 });
+
+setInterval(function () {
+  SSE.emit("push", "message", { msg: "admit one" });
+}, 1000);
 
 server.listen(port, () => console.log(`Server running on localhost:${port}`));

@@ -20,10 +20,10 @@ function App() {
     });
 
     source.addEventListener("message", (e) => {
-      console.log('message')
-      const data = JSON.parse(e.data);
+      console.log('got message!!')
+      // const data = JSON.parse(e.data);
 
-      console.log(data);
+      // console.log(data);
     });
 
     source.addEventListener("error", (e) => {
